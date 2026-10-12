@@ -1,0 +1,2175 @@
+{
+  "author": "Paperfoot AI Pte. Ltd.",
+  "authorUrl": "https://agingresearch.news",
+  "cloudEndpoint": "https://agingresearch.news/api/mcp",
+  "description": "AgingResearch.News is a web application for finding and following research on aging and age-related disease. It connects biomedical papers with evidence summaries, clinical trials, research grants and related topics. Readers can search the public site, use topic RSS feeds, or connect an AI assistant through its MCP API. Paper summaries are generated and checked by AI, with links to the underlying research and its limitations. Public reading is free; personalised features and higher API allowances require an account or paid plan.",
+  "homepage": "https://agingresearch.news/developers#mcp",
+  "icon": "https://agingresearch.news/logo.png",
+  "identifier": "agingresearch-news",
+  "name": "AgingResearch.News",
+  "prompts": [],
+  "resources": [
+    {
+      "name": "story_card",
+      "title": "Story card",
+      "uri": "ui://agingresearch-news/story-card-v2.html",
+      "description": "A story ARN wrote about a paper: headline, journal, time, the evidence in words, the picture, and links to the story and the paper.",
+      "mimeType": "text/html;profile=mcp-app"
+    },
+    {
+      "name": "evidence_card",
+      "title": "Evidence card",
+      "uri": "ui://agingresearch-news/evidence-card-v2.html",
+      "description": "An intervention's, gene's or process's evidence as structure (the species it reached, independent labs, findings against, trials), never a grade, with its newest papers.",
+      "mimeType": "text/html;profile=mcp-app"
+    },
+    {
+      "name": "agingresearch_news",
+      "title": "AgingResearch.News",
+      "uri": "ui://agingresearch-news/sidebar-v2.html",
+      "description": "AgingResearch.News: the feed, what the reader follows, their questions to Ask, and search.",
+      "mimeType": "text/html;profile=mcp-app"
+    }
+  ],
+  "tags": [
+    "aging-research",
+    "biomedical-research",
+    "clinical-trials",
+    "longevity"
+  ],
+  "tools": [
+    {
+      "name": "search_papers",
+      "title": "Search papers",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "Search the biomedical papers ARN has read for words in their titles and abstracts, best match first. Supports \"quoted phrases\", OR and -exclusions. By default only papers ARN judged relevant to human aging; narrow by study type, category, body system, age link, preprint status, author or the date a paper entered ARN. Each result gives its study type, ARN's judgement, its subjects and ARN's story when one was published. Read one in full with get_paper.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "q": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Search terms. Supports \"quoted phrases\", OR and -exclusions.",
+            "examples": [
+              "senolytic mice"
+            ]
+          },
+          "since": {
+            "type": "string",
+            "format": "date",
+            "description": "Only papers that entered ARN on or after this UTC date (YYYY-MM-DD; a full ISO timestamp is cut to its date).",
+            "examples": [
+              "2026-09-28"
+            ]
+          },
+          "until": {
+            "type": "string",
+            "format": "date",
+            "description": "Only papers that entered ARN on or before this UTC date (YYYY-MM-DD)."
+          },
+          "min_relevance": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 3,
+            "description": "Lowest aging-relevance score to include (0 to 3, see `judgement.relevance`). Without it, the papers the site shows; 1 adds tangential papers; 0 returns every paper ARN read, most of which are not about aging."
+          },
+          "study_type": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "human_trial",
+                "human_observational",
+                "animal",
+                "invertebrate",
+                "cells",
+                "computational",
+                "review",
+                "other"
+              ]
+            },
+            "minItems": 1,
+            "description": "Main source of evidence.",
+            "examples": [
+              [
+                "human_trial",
+                "animal"
+              ]
+            ]
+          },
+          "category": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "mechanisms",
+                "interventions",
+                "biomarkers",
+                "populations",
+                "ai-data",
+                "industry-policy"
+              ]
+            },
+            "minItems": 1,
+            "description": "Category slug. A paper matches when its category or its secondary category is listed.",
+            "examples": [
+              [
+                "interventions"
+              ]
+            ]
+          },
+          "system": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "eye",
+                "ear",
+                "heart-vessels",
+                "kidney",
+                "lung",
+                "reproductive",
+                "skin",
+                "brain-nerves",
+                "blood-immune",
+                "bone-joints",
+                "muscle",
+                "metabolism",
+                "gut-microbiome",
+                "whole-body"
+              ]
+            },
+            "minItems": 1,
+            "description": "Body system key (see `systems`). A paper matches when it involves any of them. Only papers that have been through extraction have systems.",
+            "examples": [
+              [
+                "brain-nerves",
+                "muscle"
+              ]
+            ]
+          },
+          "age_link": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "lifespan_healthspan",
+                "aged_comparison",
+                "age_trajectory",
+                "aging_outcome",
+                "age_accumulating_state",
+                "aging_lever",
+                "prevention",
+                "tool_or_field",
+                "rejuvenation_tech",
+                "population_only",
+                "asserted_only",
+                "none"
+              ]
+            },
+            "minItems": 1,
+            "description": "How the work itself connects to aging (see `judgement.age_link`).",
+            "examples": [
+              [
+                "lifespan_healthspan",
+                "aging_lever"
+              ]
+            ]
+          },
+          "preprint": {
+            "type": "boolean",
+            "description": "`true` for preprints only, `false` for peer-reviewed papers only. Omit for both."
+          },
+          "author": {
+            "type": "string",
+            "maxLength": 80,
+            "description": "Papers by an author. A name matches every author who answers to it: the words in any order, with or without accents, an initial standing for any name it begins (`sinclair d`). An `author_id` from a paper's `authors_full` (an OpenAlex author id such as `A5022713595`, or an ORCID iD) matches that one person.",
+            "examples": [
+              "David Sinclair"
+            ]
+          },
+          "cursor": {
+            "type": "string",
+            "maxLength": 400,
+            "description": "Opaque cursor from `pagination.next_cursor` of the previous page. Keep the other parameters the same."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 25,
+            "default": 10,
+            "description": "Results per page, 1 to 25."
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "Search papers",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "noauth"
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.read"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "list_papers",
+      "title": "List new papers",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "The newest papers ARN has read, by the date they entered ARN, with the same filters as search_papers and an optional words filter. Use it for what is new in a category, study type or body system, or for one author's papers (author takes a name, or an author_id from get_paper).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "since": {
+            "type": "string",
+            "format": "date",
+            "description": "Only papers that entered ARN on or after this UTC date (YYYY-MM-DD; a full ISO timestamp is cut to its date).",
+            "examples": [
+              "2026-09-28"
+            ]
+          },
+          "until": {
+            "type": "string",
+            "format": "date",
+            "description": "Only papers that entered ARN on or before this UTC date (YYYY-MM-DD)."
+          },
+          "min_relevance": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 3,
+            "description": "Lowest aging-relevance score to include (0 to 3, see `judgement.relevance`). Without it, the papers the site shows; 1 adds tangential papers; 0 returns every paper ARN read, most of which are not about aging."
+          },
+          "study_type": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "human_trial",
+                "human_observational",
+                "animal",
+                "invertebrate",
+                "cells",
+                "computational",
+                "review",
+                "other"
+              ]
+            },
+            "minItems": 1,
+            "description": "Main source of evidence.",
+            "examples": [
+              [
+                "human_trial",
+                "animal"
+              ]
+            ]
+          },
+          "category": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "mechanisms",
+                "interventions",
+                "biomarkers",
+                "populations",
+                "ai-data",
+                "industry-policy"
+              ]
+            },
+            "minItems": 1,
+            "description": "Category slug. A paper matches when its category or its secondary category is listed.",
+            "examples": [
+              [
+                "interventions"
+              ]
+            ]
+          },
+          "system": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "eye",
+                "ear",
+                "heart-vessels",
+                "kidney",
+                "lung",
+                "reproductive",
+                "skin",
+                "brain-nerves",
+                "blood-immune",
+                "bone-joints",
+                "muscle",
+                "metabolism",
+                "gut-microbiome",
+                "whole-body"
+              ]
+            },
+            "minItems": 1,
+            "description": "Body system key (see `systems`). A paper matches when it involves any of them. Only papers that have been through extraction have systems.",
+            "examples": [
+              [
+                "brain-nerves",
+                "muscle"
+              ]
+            ]
+          },
+          "age_link": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "lifespan_healthspan",
+                "aged_comparison",
+                "age_trajectory",
+                "aging_outcome",
+                "age_accumulating_state",
+                "aging_lever",
+                "prevention",
+                "tool_or_field",
+                "rejuvenation_tech",
+                "population_only",
+                "asserted_only",
+                "none"
+              ]
+            },
+            "minItems": 1,
+            "description": "How the work itself connects to aging (see `judgement.age_link`).",
+            "examples": [
+              [
+                "lifespan_healthspan",
+                "aging_lever"
+              ]
+            ]
+          },
+          "preprint": {
+            "type": "boolean",
+            "description": "`true` for preprints only, `false` for peer-reviewed papers only. Omit for both."
+          },
+          "author": {
+            "type": "string",
+            "maxLength": 80,
+            "description": "Papers by an author. A name matches every author who answers to it: the words in any order, with or without accents, an initial standing for any name it begins (`sinclair d`). An `author_id` from a paper's `authors_full` (an OpenAlex author id such as `A5022713595`, or an ORCID iD) matches that one person.",
+            "examples": [
+              "David Sinclair"
+            ]
+          },
+          "q": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Full-text filter over title and abstract. Supports \"quoted phrases\", OR and -exclusions. Results stay in date order; use search_papers for ranked results.",
+            "examples": [
+              "rapamycin"
+            ]
+          },
+          "cursor": {
+            "type": "string",
+            "maxLength": 400,
+            "description": "Opaque cursor from `pagination.next_cursor` of the previous page. Keep the other parameters the same."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 25,
+            "default": 10,
+            "description": "Results per page, 1 to 25."
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "List new papers",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "noauth"
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.read"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "get_paper",
+      "title": "Get a paper",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "One paper with everything ARN knows about it: its judgement, the language it was published in with its own-language title when that is not English, every author with ORCID iD and institutions, ARN's full story (headline, body, why it matters, caveats) when published, and the entities and claims extracted from it. Takes an ARN paper id such as MED-42823970 from another tool's results.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 80,
+            "description": "ARN paper id, e.g. MED-42823970.",
+            "examples": [
+              "MED-42823970"
+            ]
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "Get a paper",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "noauth"
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.read"
+            ]
+          }
+        ],
+        "ui": {
+          "resourceUri": "ui://agingresearch-news/story-card-v2.html"
+        },
+        "openai/widgetAccessible": true,
+        "openai/outputTemplate": "ui://agingresearch-news/story-card-v2.html"
+      }
+    },
+    {
+      "name": "list_stories",
+      "title": "List ARN's stories",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "Stories ARN wrote about new papers and published, newest first, each checked against its paper: a plain-language headline, body, why it matters and caveats, with the paper. Narrow by category, body system, study type or publication date.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "since": {
+            "type": "string",
+            "format": "date",
+            "description": "Only stories published on or after this UTC date (YYYY-MM-DD).",
+            "examples": [
+              "2026-09-28"
+            ]
+          },
+          "until": {
+            "type": "string",
+            "format": "date",
+            "description": "Only stories published on or before this UTC date (YYYY-MM-DD)."
+          },
+          "category": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "mechanisms",
+                "interventions",
+                "biomarkers",
+                "populations",
+                "ai-data",
+                "industry-policy"
+              ]
+            },
+            "minItems": 1,
+            "description": "Category slug. A paper matches when its category or its secondary category is listed.",
+            "examples": [
+              [
+                "interventions"
+              ]
+            ]
+          },
+          "system": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "eye",
+                "ear",
+                "heart-vessels",
+                "kidney",
+                "lung",
+                "reproductive",
+                "skin",
+                "brain-nerves",
+                "blood-immune",
+                "bone-joints",
+                "muscle",
+                "metabolism",
+                "gut-microbiome",
+                "whole-body"
+              ]
+            },
+            "minItems": 1,
+            "description": "Body system key (see `systems`). A paper matches when it involves any of them. Only papers that have been through extraction have systems.",
+            "examples": [
+              [
+                "brain-nerves",
+                "muscle"
+              ]
+            ]
+          },
+          "study_type": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "human_trial",
+                "human_observational",
+                "animal",
+                "invertebrate",
+                "cells",
+                "computational",
+                "review",
+                "other"
+              ]
+            },
+            "minItems": 1,
+            "description": "Main source of evidence.",
+            "examples": [
+              [
+                "human_trial",
+                "animal"
+              ]
+            ]
+          },
+          "cursor": {
+            "type": "string",
+            "maxLength": 400,
+            "description": "Opaque cursor from `pagination.next_cursor` of the previous page. Keep the other parameters the same."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 25,
+            "default": 10,
+            "description": "Results per page, 1 to 25."
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "List ARN's stories",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "noauth"
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.read"
+            ]
+          }
+        ],
+        "ui": {
+          "resourceUri": "ui://agingresearch-news/story-card-v2.html"
+        },
+        "openai/widgetAccessible": true,
+        "openai/outputTemplate": "ui://agingresearch-news/story-card-v2.html"
+      }
+    },
+    {
+      "name": "find_entities",
+      "title": "Find entities",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "Find what papers are about: interventions such as drugs and diets, genes, biological processes, diseases, biomarkers, organisms, methods, hallmarks and more, most-studied first. Pass a result's type and key to get_entity.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "pattern": "^[a-z_]{1,32}$",
+            "description": "Entity type, e.g. intervention, gene, pathway, component, system, method, hallmark, phenotype, organism, tissue, disease, biomarker, mesh.",
+            "examples": [
+              "intervention"
+            ]
+          },
+          "q": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Match on name or key, case-insensitive substring.",
+            "examples": [
+              "rapa"
+            ]
+          },
+          "cursor": {
+            "type": "string",
+            "maxLength": 400,
+            "description": "Opaque cursor from `pagination.next_cursor` of the previous page. Keep the other parameters the same."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 25,
+            "default": 10,
+            "description": "Results per page, 1 to 25."
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "Find entities",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "noauth"
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.read"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "get_entity",
+      "title": "Get an entity and its papers",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "One entity, such as intervention rapamycin or disease sarcopenia, with the papers that involve it, newest first, and the role it plays in each. For an intervention, a gene or a process, `evidence` gives its evidence as structure, never as a grade: the species its findings reach and whether independent labs found the same there, the labs and countries behind them, the findings against, its trials and those with no results posted, its funders and its company ties. A synonym or an old key answers with the entity it now names.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "pattern": "^[a-z_]{1,32}$",
+            "description": "Entity type.",
+            "examples": [
+              "intervention"
+            ]
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Entity key within its type.",
+            "examples": [
+              "rapamycin"
+            ]
+          },
+          "min_relevance": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 3,
+            "description": "Lowest aging-relevance score for the papers listed. Default: no filter."
+          },
+          "cursor": {
+            "type": "string",
+            "maxLength": 400,
+            "description": "Opaque cursor from `pagination.next_cursor` of the previous page. Keep the other parameters the same."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 25,
+            "default": 10,
+            "description": "Results per page, 1 to 25."
+          }
+        },
+        "required": [
+          "type",
+          "key"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "Get an entity and its papers",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "noauth"
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.read"
+            ]
+          }
+        ],
+        "ui": {
+          "resourceUri": "ui://agingresearch-news/evidence-card-v2.html"
+        },
+        "openai/widgetAccessible": true,
+        "openai/outputTemplate": "ui://agingresearch-news/evidence-card-v2.html"
+      }
+    },
+    {
+      "name": "list_claims",
+      "title": "List findings",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "Findings extracted from papers as subject, relation and object (for example rapamycin extends_lifespan in Mus musculus), with effect size, conditions and the paper. Narrow by subject, object, relation, organism or paper.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "subject": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Subject text, entity name or entity key (case-insensitive substring).",
+            "examples": [
+              "rapamycin"
+            ]
+          },
+          "object": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Object text, entity name or entity key (case-insensitive substring).",
+            "examples": [
+              "lifespan"
+            ]
+          },
+          "relation": {
+            "type": "string",
+            "maxLength": 40,
+            "description": "Exact relation, e.g. increases, decreases, associated_with, extends_lifespan.",
+            "examples": [
+              "extends_lifespan"
+            ]
+          },
+          "organism": {
+            "type": "string",
+            "maxLength": 60,
+            "description": "Organism, e.g. Homo sapiens, Mus musculus (case-insensitive substring).",
+            "examples": [
+              "mus musculus"
+            ]
+          },
+          "paper_id": {
+            "type": "string",
+            "maxLength": 80,
+            "description": "Only claims from this paper."
+          },
+          "cursor": {
+            "type": "string",
+            "maxLength": 400,
+            "description": "Opaque cursor from `pagination.next_cursor` of the previous page. Keep the other parameters the same."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 25,
+            "default": 10,
+            "description": "Results per page, 1 to 25."
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "List findings",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "noauth"
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.read"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "list_trials",
+      "title": "List clinical trials",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "Clinical trials from ClinicalTrials.gov that bear on human aging, newest registry update first: phase, status, sponsor, size, conditions, interventions and the latest change. Narrow by words, phase, recruitment status, focus, industry sponsor or update date.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "q": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Words that must all appear in the trial's titles, conditions, interventions, keywords or sponsor (case-insensitive).",
+            "examples": [
+              "rapamycin"
+            ]
+          },
+          "phase": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "none"
+              ]
+            },
+            "minItems": 1,
+            "description": "Phase: `1` (early phase 1 and phase 1), `2`, `3`, `4`, or `none` for studies with no phase.",
+            "examples": [
+              [
+                "2",
+                "3"
+              ]
+            ]
+          },
+          "status": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "recruiting",
+                "active",
+                "completed",
+                "stopped"
+              ]
+            },
+            "minItems": 1,
+            "description": "Recruitment status: `recruiting` (recruiting, not yet recruiting or by invitation), `active` (active, not recruiting), `completed`, or `stopped` (terminated, withdrawn or suspended).",
+            "examples": [
+              [
+                "recruiting"
+              ]
+            ]
+          },
+          "focus": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "intervention",
+                "condition",
+                "endpoint",
+                "biomarker",
+                "observational",
+                "other"
+              ]
+            },
+            "minItems": 1,
+            "description": "The trial's main connection to aging (see `focus`).",
+            "examples": [
+              [
+                "intervention"
+              ]
+            ]
+          },
+          "industry": {
+            "type": "boolean",
+            "description": "`true` for trials whose lead sponsor is a company, `false` for the rest. Omit for both."
+          },
+          "since": {
+            "type": "string",
+            "format": "date",
+            "description": "Only trials the registry updated on or after this date (YYYY-MM-DD).",
+            "examples": [
+              "2026-09-01"
+            ]
+          },
+          "min_relevance": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 3,
+            "description": "Lowest aging-relevance score to include (0 to 3, see `relevance`). Default 1.8, the trials /trials shows."
+          },
+          "cursor": {
+            "type": "string",
+            "maxLength": 400,
+            "description": "Opaque cursor from `pagination.next_cursor` of the previous page. Keep the other parameters the same."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 25,
+            "default": 10,
+            "description": "Results per page, 1 to 25."
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "List clinical trials",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "noauth"
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.read"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "get_trial",
+      "title": "Get a clinical trial",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "One clinical trial by its registry number (NCT, ISRCTN, ChiCTR, CTRI, CTIS and the rest), with the registry's summary, outcomes and dates, every change ARN recorded and the papers that cite it. A record from the WHO ICTRP carries its attribution and the day WHO processed it, to show with it.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "nct_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z-]{1,12} ?[0-9][0-9A-Za-z-]{3,30}$",
+            "description": "The trial's registry number, e.g. NCT04488601 or ISRCTN12345678.",
+            "examples": [
+              "NCT04488601"
+            ]
+          }
+        },
+        "required": [
+          "nct_id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "Get a clinical trial",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "noauth"
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.read"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "list_news",
+      "title": "List news",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "News about aging research and the longevity industry (companies, funding, trial results, regulators, policy, conferences), one story per event, newest first, in ARN's words with a link to every outlet that covered it. Narrow by words, kind or date.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "q": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Words that must all appear in the story's headline or summary (case-insensitive).",
+            "examples": [
+              "Retro Biosciences"
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "company",
+              "trial_result",
+              "regulatory",
+              "funding",
+              "research_news",
+              "policy",
+              "conference",
+              "other"
+            ],
+            "description": "Only stories of this kind.",
+            "examples": [
+              "funding"
+            ]
+          },
+          "since": {
+            "type": "string",
+            "format": "date",
+            "description": "Only stories with coverage on or after this UTC date (YYYY-MM-DD).",
+            "examples": [
+              "2026-09-28"
+            ]
+          },
+          "cursor": {
+            "type": "string",
+            "maxLength": 400,
+            "description": "Opaque cursor from `pagination.next_cursor` of the previous page. Keep the other parameters the same."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 25,
+            "default": 10,
+            "description": "Results per page, 1 to 25."
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "List news",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "noauth"
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.read"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "list_grants",
+      "title": "List research grants",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "Research grants that bear on human aging, from NIH, the EU (CORDIS), UKRI and Wellcome, judged for aging as papers are, newest award first: title, funder, holder, investigators, amount, funded period, scheme and a link to the record. Narrow by an entity the title names (type:key, as find_entities gives), a funder or holder key, title words or award date. Use it for who funds what, how much and since when.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "q": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Words of the grant's title (\"quoted phrases\", OR and -exclusions work).",
+            "examples": [
+              "senescence"
+            ]
+          },
+          "entity": {
+            "type": "string",
+            "pattern": "^[a-z]+:.+$",
+            "maxLength": 200,
+            "description": "Only grants whose titles name this entity, as `type:key` (see /entities), e.g. `intervention:rapamycin` or `disease:sarcopenia`.",
+            "examples": [
+              "intervention:rapamycin"
+            ]
+          },
+          "funder": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Only grants from this funder, by its organisation key or name, e.g. `nia` or `wellcome`.",
+            "examples": [
+              "nia"
+            ]
+          },
+          "holder": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Only grants held by this organisation (its key) or investigator (`person:` and their key), e.g. `buck-institute-for-research-on-aging`."
+          },
+          "since": {
+            "type": "string",
+            "format": "date",
+            "description": "Only grants awarded on or after this date (YYYY-MM-DD).",
+            "examples": [
+              "2026-09-01"
+            ]
+          },
+          "until": {
+            "type": "string",
+            "format": "date",
+            "description": "Only grants awarded on or before this date (YYYY-MM-DD)."
+          },
+          "cursor": {
+            "type": "string",
+            "maxLength": 400,
+            "description": "Opaque cursor from `pagination.next_cursor` of the previous page. Keep the other parameters the same."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 25,
+            "default": 10,
+            "description": "Results per page, 1 to 25."
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "List research grants",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "noauth"
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.read"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "list_conferences",
+      "title": "List conferences",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "The conference calendar for aging research and age-related disease: meetings still to come or on, soonest first, then recent ones, each edition with its dates, place and how many of its abstracts ARN holds. Read one, and an edition's abstracts, with get_conference.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "List conferences",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "noauth"
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.read"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "get_conference",
+      "title": "Get a conference and its abstracts",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "One conference by its id from list_conferences, with its organiser, site and every edition. With `edition`, that edition's abstracts worth reading, the most relevant first, each with its number, format and the paper it was later published as. Read an abstract in full with get_paper.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]{1,60}$",
+            "description": "Conference id from list_conferences, e.g. gsa.",
+            "examples": [
+              "gsa"
+            ]
+          },
+          "edition": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]{1,40}$",
+            "description": "An edition from `editions`, e.g. 2025: list its abstracts.",
+            "examples": [
+              "2025"
+            ]
+          },
+          "min_visibility": {
+            "type": "string",
+            "enum": [
+              "out",
+              "matchable",
+              "searchable",
+              "visible",
+              "core"
+            ],
+            "default": "visible",
+            "description": "With `edition`: the lowest visibility band of the abstracts listed (see `judgement.visibility`). Default `visible`, the abstracts the site lists."
+          },
+          "cursor": {
+            "type": "string",
+            "maxLength": 400,
+            "description": "Opaque cursor from `pagination.next_cursor` of the previous page. Keep the other parameters the same."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 25,
+            "default": 10,
+            "description": "Results per page, 1 to 25."
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "Get a conference and its abstracts",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "noauth"
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.read"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "list_assets",
+      "title": "List drug and therapy programmes",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "Drug and therapy programmes in development (assets), furthest stage first: each with its developers and partners, code names, modality, targets, mechanism, indications with the stage of each, hallmarks of aging and lifespan evidence. Narrow by target (a gene symbol such as GLP1R, or a process), mechanism words, modality, hallmark, indication, stage, the developer's country, an organisation or a name. Read one in full with get_asset; count them with count_pipeline. An account whose plan includes drug and therapy programmes reads every record in full; any other caller reads the outline AgingResearch.News shows on its asset pages.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "A target: a gene symbol or key (`GLP1R`, `bcl2l1`) or a process key (`mtor`, `cellular-senescence`).",
+            "examples": [
+              "GLP1R"
+            ]
+          },
+          "mechanism": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Words that must all appear in the asset's mechanism line (case-insensitive).",
+            "examples": [
+              "senescent"
+            ]
+          },
+          "modality": {
+            "type": "string",
+            "enum": [
+              "small_molecule",
+              "antibody",
+              "protein",
+              "peptide",
+              "oligonucleotide",
+              "mrna",
+              "gene_therapy",
+              "gene_editing",
+              "cell_therapy",
+              "vaccine",
+              "microbiome",
+              "blood_product",
+              "device",
+              "supplement",
+              "other"
+            ],
+            "description": "The kind of therapy (see `modality`).",
+            "examples": [
+              "small_molecule"
+            ]
+          },
+          "hallmark": {
+            "type": "string",
+            "enum": [
+              "genomic-instability",
+              "telomere-attrition",
+              "epigenetic-alterations",
+              "loss-of-proteostasis",
+              "disabled-macroautophagy",
+              "deregulated-nutrient-sensing",
+              "mitochondrial-dysfunction",
+              "cellular-senescence",
+              "stem-cell-exhaustion",
+              "altered-intercellular-communication",
+              "chronic-inflammation",
+              "dysbiosis"
+            ],
+            "description": "A hallmark of aging the asset acts on.",
+            "examples": [
+              "cellular-senescence"
+            ]
+          },
+          "indication": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "A disease, by name or entity key (`idiopathic pulmonary fibrosis`, `alzheimer-disease`).",
+            "examples": [
+              "alzheimer disease"
+            ]
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "approved",
+              "phase3",
+              "phase2",
+              "phase1",
+              "human_trials",
+              "veterinary",
+              "preclinical",
+              "discontinued"
+            ],
+            "description": "Stage: with `indication`, the stage for that indication; otherwise the asset's furthest stage.",
+            "examples": [
+              "phase2"
+            ]
+          },
+          "country": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{2}$",
+            "description": "The developer's country, ISO 3166 alpha-2 (`US`, `GB`, `CH`).",
+            "examples": [
+              "US"
+            ]
+          },
+          "organisation": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "An organisation key: the assets it develops, partners on or licensed out.",
+            "examples": [
+              "unity-biotechnology"
+            ]
+          },
+          "q": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Letters and digits in any of the asset's names or code names (`UBX1325` matches UBX-1325).",
+            "examples": [
+              "UBX1325"
+            ]
+          },
+          "cursor": {
+            "type": "string",
+            "maxLength": 400,
+            "description": "Opaque cursor from `pagination.next_cursor` of the previous page. Keep the other parameters the same."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 25,
+            "default": 10,
+            "description": "Results per page, 1 to 25."
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "List drug and therapy programmes",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "noauth"
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.read"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "get_asset",
+      "title": "Get a drug or therapy programme",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "One asset by its key or any code name (ubx1325, UBX-1325, BMS-986278): its developers, partners and licensors, targets, mechanism, modality, every indication with its stage and the trial or source behind it, its lifespan evidence and the news that names it. An account whose plan includes drug and therapy programmes reads every record in full; any other caller reads the outline AgingResearch.News shows on its asset pages.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "maxLength": 120,
+            "description": "The asset's key or a code name.",
+            "examples": [
+              "ubx1325"
+            ]
+          }
+        },
+        "required": [
+          "key"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "Get a drug or therapy programme",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "noauth"
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.read"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "count_pipeline",
+      "title": "Count the development pipeline",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "How many drug and therapy programmes there are, grouped by stage, modality, target, hallmark, indication, the developer's country or the developer, with each group's count at each stage. Takes list_assets' filters: by=target with indication=obesity counts the targets of obesity programmes. An account whose plan includes drug and therapy programmes reads every record in full; any other caller reads the outline AgingResearch.News shows on its asset pages.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "by": {
+            "type": "string",
+            "enum": [
+              "stage",
+              "modality",
+              "target",
+              "hallmark",
+              "indication",
+              "country",
+              "developer"
+            ],
+            "default": "stage",
+            "description": "What to group by.",
+            "examples": [
+              "modality"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "A target: a gene symbol or key (`GLP1R`, `bcl2l1`) or a process key (`mtor`, `cellular-senescence`).",
+            "examples": [
+              "GLP1R"
+            ]
+          },
+          "mechanism": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Words that must all appear in the asset's mechanism line (case-insensitive).",
+            "examples": [
+              "senescent"
+            ]
+          },
+          "modality": {
+            "type": "string",
+            "enum": [
+              "small_molecule",
+              "antibody",
+              "protein",
+              "peptide",
+              "oligonucleotide",
+              "mrna",
+              "gene_therapy",
+              "gene_editing",
+              "cell_therapy",
+              "vaccine",
+              "microbiome",
+              "blood_product",
+              "device",
+              "supplement",
+              "other"
+            ],
+            "description": "The kind of therapy (see `modality`).",
+            "examples": [
+              "small_molecule"
+            ]
+          },
+          "hallmark": {
+            "type": "string",
+            "enum": [
+              "genomic-instability",
+              "telomere-attrition",
+              "epigenetic-alterations",
+              "loss-of-proteostasis",
+              "disabled-macroautophagy",
+              "deregulated-nutrient-sensing",
+              "mitochondrial-dysfunction",
+              "cellular-senescence",
+              "stem-cell-exhaustion",
+              "altered-intercellular-communication",
+              "chronic-inflammation",
+              "dysbiosis"
+            ],
+            "description": "A hallmark of aging the asset acts on.",
+            "examples": [
+              "cellular-senescence"
+            ]
+          },
+          "indication": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "A disease, by name or entity key (`idiopathic pulmonary fibrosis`, `alzheimer-disease`).",
+            "examples": [
+              "alzheimer disease"
+            ]
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "approved",
+              "phase3",
+              "phase2",
+              "phase1",
+              "human_trials",
+              "veterinary",
+              "preclinical",
+              "discontinued"
+            ],
+            "description": "Stage: with `indication`, the stage for that indication; otherwise the asset's furthest stage.",
+            "examples": [
+              "phase2"
+            ]
+          },
+          "country": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{2}$",
+            "description": "The developer's country, ISO 3166 alpha-2 (`US`, `GB`, `CH`).",
+            "examples": [
+              "US"
+            ]
+          },
+          "organisation": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "An organisation key: the assets it develops, partners on or licensed out.",
+            "examples": [
+              "unity-biotechnology"
+            ]
+          },
+          "q": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Letters and digits in any of the asset's names or code names (`UBX1325` matches UBX-1325).",
+            "examples": [
+              "UBX1325"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 25,
+            "default": 10,
+            "description": "Results per page, 1 to 25."
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "Count the development pipeline",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "noauth"
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.read"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "follow",
+      "title": "Follow a topic",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "Use this when the user asks to follow a drug, gene, process, disease or other entity on AgingResearch.News, so its new papers reach them. Takes the type and key that find_entities or get_entity give. Following is saved to the user's ARN account: new papers on it appear in For you and the daily follow email.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "intervention",
+              "gene",
+              "pathway",
+              "disease",
+              "biomarker",
+              "hallmark",
+              "organism",
+              "system",
+              "component",
+              "method"
+            ],
+            "description": "The entity's type, as find_entities or get_entity gives it."
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "The entity's key within its type, such as rapamycin."
+          }
+        },
+        "required": [
+          "type",
+          "key"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "Follow a topic",
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.account"
+            ]
+          }
+        ],
+        "ui": {
+          "visibility": [
+            "model",
+            "app"
+          ]
+        },
+        "openai/widgetAccessible": true
+      }
+    },
+    {
+      "name": "unfollow",
+      "title": "Stop following a topic",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "Use this when the user asks to stop following a drug, gene, process or other entity on AgingResearch.News. Takes the type and key that list_follows, find_entities or get_entity give. Removes the follow from the user's ARN account.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "intervention",
+              "gene",
+              "pathway",
+              "disease",
+              "biomarker",
+              "hallmark",
+              "organism",
+              "system",
+              "component",
+              "method"
+            ],
+            "description": "The entity's type, as find_entities or get_entity gives it."
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "description": "The entity's key within its type, such as rapamycin."
+          }
+        },
+        "required": [
+          "type",
+          "key"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "Stop following a topic",
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.account"
+            ]
+          }
+        ],
+        "ui": {
+          "visibility": [
+            "model",
+            "app"
+          ]
+        },
+        "openai/widgetAccessible": true
+      }
+    },
+    {
+      "name": "list_follows",
+      "title": "List what the user follows",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "Use this when the user asks what they follow on AgingResearch.News. Lists the drugs, genes, processes and saved searches their ARN account follows, newest first, each with its page on ARN; an entity's id is the type:key that unfollow takes.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "List what the user follows",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.account"
+            ]
+          }
+        ],
+        "ui": {
+          "visibility": [
+            "model",
+            "app"
+          ]
+        },
+        "openai/widgetAccessible": true
+      }
+    },
+    {
+      "name": "list_questions",
+      "title": "List the user's questions to ARN",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "Use this when the user asks about questions they asked AgingResearch.News (Ask) before. Lists their most recent conversations, newest first, each with its title and its address on ARN, where the answer and its sources are.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 25,
+            "default": 10,
+            "description": "How many, 1 to 25."
+          }
+        },
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "List the user's questions to ARN",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.account"
+            ]
+          }
+        ],
+        "ui": {
+          "visibility": [
+            "model",
+            "app"
+          ]
+        },
+        "openai/widgetAccessible": true
+      }
+    },
+    {
+      "name": "open_arn",
+      "title": "AgingResearch.News",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "Use this when the user asks to open AgingResearch.News or to see their ARN feed, follows and recent questions in one place. Shows the newest stories ARN wrote (For you when the user is signed in, else Top), what they follow and their recent questions, with search.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "tab": {
+            "type": "string",
+            "enum": [
+              "for-you",
+              "top"
+            ],
+            "description": "Which feed to open on."
+          }
+        },
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "AgingResearch.News",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "noauth"
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.read"
+            ]
+          }
+        ],
+        "ui": {
+          "resourceUri": "ui://agingresearch-news/sidebar-v2.html",
+          "visibility": [
+            "model",
+            "app"
+          ]
+        },
+        "openai/widgetAccessible": true,
+        "openai/outputTemplate": "ui://agingresearch-news/sidebar-v2.html",
+        "openai/ui": {
+          "entrypoints": [
+            {
+              "type": "global"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "list_feed",
+      "title": "Feed",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "The sidebar's feed: For you or Top, as story cards.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "tab": {
+            "type": "string",
+            "enum": [
+              "for-you",
+              "top"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "Feed",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "noauth"
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.read"
+            ]
+          }
+        ],
+        "ui": {
+          "resourceUri": "ui://agingresearch-news/sidebar-v2.html",
+          "visibility": [
+            "app"
+          ]
+        },
+        "openai/widgetAccessible": true,
+        "openai/outputTemplate": "ui://agingresearch-news/sidebar-v2.html",
+        "openai/visibility": "private"
+      }
+    },
+    {
+      "name": "search_arn",
+      "title": "Search",
+      "icons": [
+        {
+          "src": "https://agingresearch.news/logo.png",
+          "mimeType": "image/png",
+          "sizes": [
+            "512x512"
+          ]
+        }
+      ],
+      "description": "The sidebar's search: entities and papers matching words, as cards.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "q": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "q"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "title": "Search",
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      },
+      "_meta": {
+        "securitySchemes": [
+          {
+            "type": "noauth"
+          },
+          {
+            "type": "oauth2",
+            "scopes": [
+              "arn.read"
+            ]
+          }
+        ],
+        "ui": {
+          "resourceUri": "ui://agingresearch-news/sidebar-v2.html",
+          "visibility": [
+            "app"
+          ]
+        },
+        "openai/widgetAccessible": true,
+        "openai/outputTemplate": "ui://agingresearch-news/sidebar-v2.html",
+        "openai/visibility": "private"
+      }
+    }
+  ],
+  "version": "1.3.0"
+}
