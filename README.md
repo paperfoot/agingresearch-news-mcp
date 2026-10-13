@@ -12,7 +12,7 @@ Add this remote MCP server in a client that supports Streamable HTTP:
 https://agingresearch.news/api/mcp
 ```
 
-Public research lookups work without an account, within usage limits. Followed topics and saved questions use OAuth to connect your ARN account.
+Public research lookups work without an account, within usage limits. Followed topics, your questions, and asking ARN itself (an answer from ARN's record with numbered sources, or an Ultradeep review of the evidence) use OAuth to connect your ARN account.
 
 [Connection instructions](https://agingresearch.news/connect) · [Tool documentation](https://agingresearch.news/developers#mcp)
 
