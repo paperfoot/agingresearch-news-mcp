@@ -26,8 +26,16 @@ To keep following a topic, connect your ARN account and ask: “Follow cellular 
 
 ## Read and follow aging research
 
+[Follow cellular senescence research](https://agingresearch.news/pathway/cellular-senescence?utm_source=github&utm_medium=referral&utm_campaign=research-watch) · [Track aging-clock evidence](https://agingresearch.news/biomarker/epigenetic-clock?utm_source=github&utm_medium=referral&utm_campaign=research-watch)
+
+Each research page links the findings to their source papers. Sign in and use Follow to keep up with new work on that subject.
+
 [Search the research](https://agingresearch.news/search?utm_source=github&utm_medium=referral&utm_campaign=mcp-readme) · [Create a free account](https://agingresearch.news/join?utm_source=github&utm_medium=referral&utm_campaign=mcp-readme)
 
-Prefer a feed reader? [Add ARN's RSS feeds](https://agingresearch.news/feeds?utm_source=github&utm_medium=referral&utm_campaign=mcp-readme), including mechanisms, interventions, biomarkers and AI/data. The feed page includes Feedly and Inoreader links and an OPML bundle.
+## Add aging research to your feed reader
+
+[Import all seven feeds (.opml)](https://agingresearch.news/feeds.opml) or [choose a topic feed](https://agingresearch.news/feeds?utm_source=github&utm_medium=referral&utm_campaign=rss-discovery): mechanisms, interventions, biomarkers, populations, AI & data, or industry & policy.
+
+For the main news feed: [Follow in Feedly](https://feedly.com/i/subscription/feed%2Fhttps%3A%2F%2Fagingresearch.news%2Ffeed.xml) · [Follow in Inoreader](https://www.inoreader.com/feed/https%3A%2F%2Fagingresearch.news%2Ffeed.xml) · [RSS URL](https://agingresearch.news/feed.xml)
 
 This repository contains the public MCP connection manifest. The hosted AgingResearch.News application is maintained separately.
