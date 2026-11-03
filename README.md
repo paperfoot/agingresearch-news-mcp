@@ -68,4 +68,4 @@ This repository holds the server's public connection manifest ([`server.json`](s
 
 ## License
 
-The files in this repository are under the [MIT License](LICENSE); the AgingResearch.News name and logo are not. To cite it, use [`CITATION.cff`](CITATION.cff).
+The files in this repository are under the [MIT License](LICENSE); the AgingResearch.News name and logo are not. To cite it, use [`CITATION.cff`](CITATION.cff) or DOI [10.5281/zenodo.23920680](https://doi.org/10.5281/zenodo.23920680) (all versions).
