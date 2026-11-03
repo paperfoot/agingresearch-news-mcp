@@ -22,7 +22,7 @@ AgingResearch.News is a hosted remote MCP server. There is nothing to download, 
    }
    ```
 
-2. Check it works: call `search_papers` with `{"query": "cellular senescence"}`. It returns recent papers, each with its title, study type and link.
+2. Check it works: call `search_papers` with `{"q": "cellular senescence"}`. It returns recent papers, each with its title, study type and link.
 
 3. Optional: the account tools (`follow`, `unfollow`, `list_follows`, `list_questions`) and the Ask tools (`ask_arn`, `start_ultradeep`, `get_ask_answer`) ask the user to sign in through OAuth the first time they are called. The client opens the sign-in page; the user signs in or makes a free account, and the call goes through.
 
