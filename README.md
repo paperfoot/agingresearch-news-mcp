@@ -1,41 +1,67 @@
 # AgingResearch.News MCP server
 
-<img src="https://agingresearch.news/logo.png" alt="AgingResearch.News app icon" width="96" height="96">
+<img src="https://agingresearch.news/logo.png" alt="AgingResearch.News" width="96" height="96">
 
-Find aging research, examine the evidence and follow new work from your AI assistant. AgingResearch.News connects biomedical papers with evidence summaries, clinical trials, research grants and related topics.
+Every new aging paper, read the minute it lands and judged on what its own work shows. Ask Claude, ChatGPT, Cursor, VS Code or any MCP client about a drug, a gene, an aging clock or a trial, and get answers that cite the papers.
 
-## Connect your research assistant
+## Add it
 
-Add this remote MCP server in a client that supports Streamable HTTP:
+Paste this address into your client as a remote MCP server (Streamable HTTP):
 
 ```text
 https://agingresearch.news/api/mcp
 ```
 
-Public research lookups work without an account, within usage limits. Followed topics, your questions, and asking ARN itself (an answer from ARN's record with numbered sources, or an Ultradeep review of the evidence) use OAuth to connect your ARN account.
+Lookups work without an account, up to a daily number. Sign in with a free AgingResearch.News account to follow topics and ask your own questions.
 
-[Connection instructions](https://agingresearch.news/connect) · [Tool documentation](https://agingresearch.news/developers#mcp)
+Steps for each client: [agingresearch.news/connect](https://agingresearch.news/s/f7623w) · Every tool and its arguments: [developer docs](https://agingresearch.news/s/yq2dkg)
 
-## Try a research question
+**Claude Code**
 
-- “Find recent papers on cellular senescence in pulmonary fibrosis. Link to the original papers.”
-- “What evidence supports rapamycin in aging? Separate animal studies from human trials and identify contrary findings.”
-- “Find recent clinical trials and research grants related to biological aging clocks.”
+```bash
+claude mcp add --transport http agingresearch-news https://agingresearch.news/api/mcp
+```
 
-To keep following a topic, connect your ARN account and ask: “Follow cellular senescence for me.”
+**VS Code** (`.vscode/mcp.json`)
 
-## Read and follow aging research
+```json
+{
+  "servers": {
+    "agingresearch-news": { "type": "http", "url": "https://agingresearch.news/api/mcp" }
+  }
+}
+```
 
-[Follow cellular senescence research](https://agingresearch.news/pathway/cellular-senescence?utm_source=github&utm_medium=referral&utm_campaign=research-watch) · [Track aging-clock evidence](https://agingresearch.news/biomarker/epigenetic-clock?utm_source=github&utm_medium=referral&utm_campaign=research-watch)
+**Cursor** (`~/.cursor/mcp.json`)
 
-Each research page links the findings to their source papers. Sign in and use Follow to keep up with new work on that subject.
+```json
+{
+  "mcpServers": {
+    "agingresearch-news": { "url": "https://agingresearch.news/api/mcp" }
+  }
+}
+```
 
-[Search the research](https://agingresearch.news/search?utm_source=github&utm_medium=referral&utm_campaign=mcp-readme) · [Create a free account](https://agingresearch.news/join?utm_source=github&utm_medium=referral&utm_campaign=mcp-readme)
+## Ask it
 
-## Add aging research to your feed reader
+- "What human evidence is there for rapamycin in aging? Keep animal and human studies apart and list the findings against."
+- "Find this month's papers on cellular senescence in pulmonary fibrosis, with a link to each paper."
+- "Which senolytic drugs are in clinical trials, and which trials have posted results?"
+- "Who funds work on epigenetic clocks, and how much?"
 
-[Import all seven feeds (.opml)](https://agingresearch.news/feeds.opml) or [choose a topic feed](https://agingresearch.news/feeds?utm_source=github&utm_medium=referral&utm_campaign=rss-discovery): mechanisms, interventions, biomarkers, populations, AI & data, or industry & policy.
+Then say "Follow cellular senescence for me", and its new papers reach your For you feed and a daily email.
 
-For the main news feed: [Follow in Feedly](https://feedly.com/i/subscription/feed%2Fhttps%3A%2F%2Fagingresearch.news%2Ffeed.xml) · [Follow in Inoreader](https://www.inoreader.com/feed/https%3A%2F%2Fagingresearch.news%2Ffeed.xml) · [RSS URL](https://agingresearch.news/feed.xml)
+## What it covers
 
-This repository contains the public MCP connection manifest. The hosted AgingResearch.News application is maintained separately.
+- Papers from PubMed, bioRxiv, medRxiv, arXiv and Europe PMC, each with its study type (human trial, human observational, animal, cells, in silico, review) and whether it is a preprint.
+- Plain-language stories on the papers worth reading.
+- Drugs, supplements, genes, biological processes, diseases and biomarkers, with their findings, contrary findings and replication across labs.
+- Clinical trials, research grants (NIH, the EU, UKRI and Wellcome), conferences and their abstracts, drug and therapy programs in development, and the field's news.
+
+Tools: `search_papers`, `list_papers`, `get_paper`, `list_stories`, `find_entities`, `get_entity`, `list_claims`, `list_trials`, `get_trial`, `list_news`, `list_grants`, `list_conferences`, `get_conference`, `list_assets`, `get_asset`, `count_pipeline`, `ask_arn`, `start_ultradeep`, `get_ask_answer`, `follow`, `unfollow`, `list_follows`, `list_questions`.
+
+## Read it on the web
+
+[Cellular senescence](https://agingresearch.news/s/rz7hr2) · [Epigenetic clocks](https://agingresearch.news/s/wkh9e7) · [RSS and topic feeds](https://agingresearch.news/s/p6hpky)
+
+This repository holds the server's public connection manifest ([`server.json`](server.json), the record in the official MCP Registry as `news.agingresearch/agingresearch-news`). The service itself is hosted by AgingResearch.News.
