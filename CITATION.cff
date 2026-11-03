@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "AgingResearch.News MCP server"
+abstract: >-
+  Open configuration files that connect AI assistants (Claude, ChatGPT,
+  VS Code, Cursor and any MCP client) to the public AgingResearch.News MCP
+  server, which searches new papers on aging and age-related disease with
+  their study type, evidence, clinical trials and research grants.
+authors:
+  - name: "Paperfoot AI Pte. Ltd."
+    website: "https://paperfoot.si"
+  - given-names: Boris
+    family-names: Djordjevic
+    affiliation: "Paperfoot AI Pte. Ltd."
+    email: boris@agingresearch.news
+version: "1.3.1"
+date-released: "2026-11-03"
+license: MIT
+url: "https://agingresearch.news/s/mmv7r5"
+repository-code: "https://github.com/paperfoot/agingresearch-news-mcp"
+keywords:
+  - aging
+  - longevity
+  - geroscience
+  - biomedical literature
+  - clinical trials
+  - model context protocol
+  - mcp

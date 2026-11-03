@@ -1,0 +1,124 @@
+publiccodeYmlVersion: "0"
+
+name: AgingResearch.News MCP server
+url: "https://github.com/paperfoot/agingresearch-news-mcp"
+landingURL: "https://agingresearch.news/s/rd2ymf"
+softwareVersion: "1.3.1"
+releaseDate: "2026-11-03"
+logo: assets/logo-400.png
+
+platforms:
+  - web
+  - windows
+  - mac
+  - linux
+
+categories:
+  - knowledge-management
+  - data-analytics
+
+developmentStatus: stable
+
+softwareType: configurationFiles
+
+organisation:
+  uri: "https://paperfoot.si"
+  name: Paperfoot AI Pte. Ltd.
+
+intendedAudience:
+  scope:
+    - research
+    - healthcare
+    - science-and-technology
+    - education
+
+description:
+  it:
+    localisedName: Server MCP di AgingResearch.News
+    shortDescription: >-
+      Configurazioni aperte per collegare assistenti IA (Claude, ChatGPT, VS
+      Code, Cursor) alla letteratura scientifica sull'invecchiamento.
+    longDescription: >
+      AgingResearch.News legge ogni nuovo articolo scientifico
+      sull'invecchiamento e sulle malattie legate all'età pubblicato su PubMed,
+      Europe PMC, bioRxiv, medRxiv e arXiv, ne indica il tipo di studio (trial
+      sull'uomo, studio osservazionale, animale, cellule, in silico, revisione)
+      e collega farmaci, integratori, geni, processi biologici, malattie,
+      biomarcatori, sperimentazioni cliniche e finanziamenti alla ricerca.
+
+
+      Questo repository contiene i file di configurazione aperti per collegare
+      un assistente di intelligenza artificiale al server MCP (Model Context
+      Protocol) pubblico di AgingResearch.News: il manifesto server.json
+      registrato nel registro ufficiale MCP, le configurazioni per Claude
+      Code, VS Code e Cursor e la guida all'installazione. Basta incollare un
+      indirizzo nel client; le ricerche funzionano senza account e le risposte
+      citano gli articoli originali.
+
+
+      È pensato per università statali, IRCCS, enti pubblici di ricerca,
+      aziende sanitarie e biblioteche biomediche che seguono la letteratura su
+      invecchiamento, geriatria e malattie croniche legate all'età, e per chi
+      sviluppa assistenti IA per il personale di ricerca. Il servizio è
+      ospitato da AgingResearch.News; la consultazione pubblica è gratuita.
+    documentation: "https://agingresearch.news/s/rd2ymf"
+    apiDocumentation: "https://agingresearch.news/s/s9rn83"
+    features:
+      - Ricerca negli articoli sull'invecchiamento con tipo di studio e preprint
+      - Prove su farmaci, geni e processi, con risultati contrari
+      - Sperimentazioni cliniche, finanziamenti e farmaci in sviluppo
+      - Configurazioni pronte per Claude Code, VS Code e Cursor
+      - Ricerche senza account, con citazione degli articoli
+  en:
+    shortDescription: >-
+      Open configuration files that connect AI assistants (Claude, ChatGPT,
+      VS Code, Cursor) to the research literature on aging.
+    longDescription: >
+      AgingResearch.News reads every new paper on aging and age-related
+      disease from PubMed, Europe PMC, bioRxiv, medRxiv and arXiv, records its
+      study type (human trial, human observational, animal, cells, in silico,
+      review) and links the drugs, supplements, genes, biological processes,
+      diseases, biomarkers, clinical trials and research grants it concerns.
+
+
+      This repository holds the open configuration files that connect an AI
+      assistant to the public AgingResearch.News MCP (Model Context Protocol)
+      server: the server.json manifest registered in the official MCP
+      Registry, configurations for Claude Code, VS Code and Cursor, and an
+      install guide. Paste one address into the client; lookups work without
+      an account and answers cite the papers.
+
+
+      It serves public universities, research hospitals, public research
+      bodies, health authorities and biomedical libraries that follow the
+      literature on aging, geriatrics and chronic age-related disease, and
+      teams building AI assistants for research staff. The service is hosted
+      by AgingResearch.News; public reading is free.
+    documentation: "https://agingresearch.news/s/rd2ymf"
+    apiDocumentation: "https://agingresearch.news/s/s9rn83"
+    features:
+      - Search aging papers by study type and preprint status
+      - Evidence on drugs, genes and processes, with findings against
+      - Clinical trials, research grants and drugs in development
+      - Ready configurations for Claude Code, VS Code and Cursor
+      - Lookups without an account, with every answer citing its papers
+
+legal:
+  license: MIT
+  mainCopyrightOwner: Paperfoot AI Pte. Ltd.
+
+maintenance:
+  type: internal
+  contacts:
+    - name: Boris Djordjevic
+      email: boris@agingresearch.news
+      affiliation: Paperfoot AI Pte. Ltd.
+
+localisation:
+  localisationReady: false
+  availableLanguages:
+    - en
+
+dependsOn:
+  proprietary:
+    - name: AgingResearch.News hosted MCP service

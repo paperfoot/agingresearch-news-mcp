@@ -65,3 +65,7 @@ Tools: `search_papers`, `list_papers`, `get_paper`, `list_stories`, `find_entiti
 [Cellular senescence](https://agingresearch.news/s/rz7hr2) · [Epigenetic clocks](https://agingresearch.news/s/wkh9e7) · [RSS and topic feeds](https://agingresearch.news/s/p6hpky)
 
 This repository holds the server's public connection manifest ([`server.json`](server.json), the record in the official MCP Registry as `news.agingresearch/agingresearch-news`). The service itself is hosted by AgingResearch.News.
+
+## License
+
+The files in this repository are under the [MIT License](LICENSE); the AgingResearch.News name and logo are not. To cite it, use [`CITATION.cff`](CITATION.cff).
